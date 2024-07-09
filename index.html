@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serial Data Checker</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      #dataArea {
+        width: 100%;
+        height: 300px;
+      }
+      #connect {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Serial Data Checker</h1>
+    <button id="connect">Connect to Serial Device</button>
+    <textarea id="dataArea" readonly></textarea>
+
+    <script>
+      let port;
+      let reader;
+
+      document.getElementById('connect').addEventListener('click', async () => {
+        try {
+          // Request a port and open a connection
+          port = await navigator.serial.requestPort();
+          await port.open({ baudRate: 9600 });
+
+          const textDecoder = new TextDecoderStream();
+          const readableStreamClosed = port.readable.pipeTo(
+            textDecoder.writable
+          );
+          const reader = textDecoder.readable.getReader();
+
+          // Read data from the serial device
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+              reader.releaseLock();
+              break;
+            }
+            document.getElementById('dataArea').value += value + '\n';
+          }
+        } catch (error) {
+          console.log('Error opening the serial port:', error);
+        }
+      });
+    </script>
+  </body>
+</html>
