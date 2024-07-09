@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -13,19 +13,61 @@
         width: 100%;
         height: 300px;
       }
-      #connect {
+      #connect,
+      #toggleScroll {
         margin-bottom: 10px;
+      }
+
+      #connect {
+        background: #20d623;
+        border: none;
+        outline: none;
+        padding: 5px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+      }
+
+      #toggleScroll {
+        background: #ffde49;
+        border: none;
+        outline: none;
+        padding: 5px;
+        border-radius: 5px;
+        color: rgb(6, 6, 6);
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .logo img {
+        height: 50px;
+        width: 200px;
+        object-fit: contain;
       }
     </style>
   </head>
   <body>
+    <div class="logo">
+      <img
+        src="https://res.cloudinary.com/di0iwc8ql/image/upload/v1720250420/tayproLogo_hvqjhq.png"
+        alt="Taypro"
+      />
+    </div>
     <h1>Serial Data Checker</h1>
-    <button id="connect">Connect to Serial Device</button>
+    <button id="connect">Connect</button>
+
     <textarea id="dataArea" readonly></textarea>
+    <button id="toggleScroll">Enable Auto-Scroll</button>
 
     <script>
       let port;
       let reader;
+      let autoScrollEnabled = false;
 
       document.getElementById('connect').addEventListener('click', async () => {
         try {
@@ -46,16 +88,30 @@
               reader.releaseLock();
               break;
             }
-            document.getElementById('dataArea').value += value + '\n';
+            document.getElementById('dataArea').value += value;
+            if (autoScrollEnabled) {
+              document.getElementById('dataArea').scrollTop =
+                document.getElementById('dataArea').scrollHeight;
+            }
           }
         } catch (error) {
           console.log('Error opening the serial port:', error);
+          alert(`Error opening the serial port: ${error.message}`);
         }
+      });
+
+      document.getElementById('toggleScroll').addEventListener('click', () => {
+        autoScrollEnabled = !autoScrollEnabled;
+        document.getElementById('toggleScroll').textContent = autoScrollEnabled
+          ? 'Disable Auto-Scroll'
+          : 'Enable Auto-Scroll';
       });
     </script>
   </body>
-</html> -->
+</html>
 
+<!-- 
+working auto scroll
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -116,3 +172,4 @@
     </script>
   </body>
 </html>
+ -->
